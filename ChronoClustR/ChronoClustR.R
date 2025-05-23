@@ -3,11 +3,11 @@
 #Read arguments (user input)
 args = commandArgs(trailingOnly=TRUE)
 
-countwec <- read.table(args[1],header=T, row.names=1, check.names=F, sep ="\t")
-VIR_cl_env <- read.table(args[2],header=T, row.names=1, check.names=F, sep ="\t")
-num_iterations <- as.integer(args[3]) #Bootstrap replicates
-size_subsample <- as.integer(args[4]) #specify the size of the subsampling datasets
-output_path <- args[5] # Output path for writing results
+countwec <- read.table(args[1],header=T, row.names=1, check.names=F, sep ="\t") #Temp1/Non_seasonal_timeseries.txt 
+VIR_cl_env <- read.table(args[2],header=T, row.names=1, check.names=F, sep ="\t") #virome_sr_environm_data_EQ_time_nogaps.txt
+num_iterations <- as.integer(args[3]) #Bootstrap replicates #20
+size_subsample <- as.integer(args[4]) #specify the size of the subsampling datasets #21
+output_path <- args[5] # Output path for writing results #Temp1/non_seas_clust
 #start_year <- as.integer(args[6]) #TSconversor parameters
 #start_month <- as.integer(args[7]) #TSconversor parameters
 #end_year <- as.integer(args[8]) #TSconversor parameters
@@ -133,9 +133,11 @@ pairwise_distances <- dist(as.matrix(unmelted_zscore), method = euclidean_distan
 mean_distance <- mean(pairwise_distances)
 }
 
-#Set the directory to the output inputted by the user
-setwd(output_path) #the automatic reporting curves and heatmaps will be placed into the output directory. 
-#These plots help to check that each iteration ran without a problem and the final co-occurence table was derived from valid calculations.
+# Define path to print out all the processing plots; default name Plots.pdf, in the future there should be a parameter so the user can decide if this information should be printed. Default should be "NO"
+plot_file <- file.path(output_path, "Plots.pdf")
+
+# Start capturing all plots into one PDF
+pdf(file = plot_file)
 
 countwect<-t(countwec) #transpose Time-series data frame
 VIR_cl_env$sample<-rownames(VIR_cl_env)
@@ -701,6 +703,8 @@ plot_grob3 <- arrangeGrob(grobs=plot_list3)
 pdf(output_plot_TSclust )
 grid.arrange(plot_grob3)
 dev.off()
+
+dev.off() #this dev.off closes the pdf(file = plot_file) of line 140
 
 #Uncomment to add the clustering information based on the clustering of the centroids
 
